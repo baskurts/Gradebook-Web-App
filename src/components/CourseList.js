@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
+import { db } from '../db';
+import { useLiveQuery } from 'dexie-react-hooks';
 
-function CourseList({ courses, setCourses }) {
+function CourseList() {
   const [newCourse, setNewCourse] = useState('');
+  const courses = useLiveQuery(() => db.courses.toArray(), []);
 
-  const addCourse = () => {
+  const addCourse = async () => {
     if (newCourse.trim() === '') return;
-    setCourses([...courses, { id: Date.now(), name: newCourse }]);
+    await db.courses.add({ name: newCourse });
     setNewCourse('');
   };
 
-  const deleteCourse = (id) => {
-    setCourses(courses.filter(course => course.id !== id));
+  const deleteCourse = async (id) => {
+    await db.courses.delete(id);
   };
 
   return (
@@ -24,7 +27,7 @@ function CourseList({ courses, setCourses }) {
       />
       <button className="add" onClick={addCourse}>Add</button>
       <ul>
-        {courses.map(course => (
+        {courses?.map(course => (
           <li key={course.id}>
             {course.name} <button className="delete" onClick={() => deleteCourse(course.id)}>🗑️</button>
           </li>

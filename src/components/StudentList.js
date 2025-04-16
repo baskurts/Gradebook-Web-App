@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
+import { db } from '../db';
+import { useLiveQuery } from 'dexie-react-hooks';
 
-function StudentList({ students, setStudents }) {
+function StudentList() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const students = useLiveQuery(() => db.students.toArray(), []);
 
-  const addStudent = () => {
+  const addStudent = async () => {
     if (fullName.trim() === '' || email.trim() === '') return;
-    setStudents([
-      ...students,
-      { id: Date.now(), fullname: fullName, email: email }
-    ]);
+    await db.students.add({ fullname: fullName, email: email });
     setFullName('');
     setEmail('');
   };
 
-  const deleteStudent = (id) => {
-    setStudents(students.filter(student => student.id !== id));
+  const deleteStudent = async (id) => {
+    await db.students.delete(id);
   };
 
   return (
@@ -35,7 +35,7 @@ function StudentList({ students, setStudents }) {
       />
       <button className="add" onClick={addStudent}>Add</button>
       <ul>
-        {students.map(student => (
+        {students?.map(student => (
           <li key={student.id}>
             {student.fullname} - {student.email}
             <button className="delete" onClick={() => deleteStudent(student.id)}>🗑️</button>

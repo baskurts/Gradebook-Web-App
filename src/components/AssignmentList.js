@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
+import { db } from '../db';
+import { useLiveQuery } from 'dexie-react-hooks';
 
-function AssignmentList({ assignments, setAssignments }) {
+function AssignmentList() {
   const [assignmentName, setAssignmentName] = useState('');
   const [totalPoints, setTotalPoints] = useState('');
+  const assignments = useLiveQuery(() => db.assignments.toArray(), []);
 
-  const addAssignment = () => {
+  const addAssignment = async () => {
     if (assignmentName.trim() === '' || totalPoints.trim() === '') return;
-    setAssignments([
-      ...assignments,
-      { id: Date.now(), name: assignmentName, totalPoints: Number(totalPoints) }
-    ]);
+    await db.assignments.add({ name: assignmentName, totalPoints: Number(totalPoints) });
     setAssignmentName('');
     setTotalPoints('');
   };
 
-  const deleteAssignment = (id) => {
-    setAssignments(assignments.filter(assign => assign.id !== id));
+  const deleteAssignment = async (id) => {
+    await db.assignments.delete(id);
   };
 
   return (
@@ -35,7 +35,7 @@ function AssignmentList({ assignments, setAssignments }) {
       />
       <button className="add" onClick={addAssignment}>Add</button>
       <ul>
-        {assignments.map(assign => (
+        {assignments?.map(assign => (
           <li key={assign.id}>
             {assign.name} - {assign.totalPoints} pts
             <button className="delete" onClick={() => deleteAssignment(assign.id)}>🗑️</button>
