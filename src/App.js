@@ -1,21 +1,33 @@
-import React, { useState } from 'react';
-import CourseList from './components/CourseList';
-import StudentList from './components/StudentList';
-import AssignmentList from './components/AssignmentList';
-import './App.css';
+import { Layout, Image } from "antd";
+import SideMenu from "./components/SideMenu";
+import AppRoutes from "./components/AppRoutes";
+
+
+const { Sider, Content, Footer } = Layout;
 
 function App() {
-  const [courses, setCourses] = useState([]);
-  const [students, setStudents] = useState([]);
-  const [assignments, setAssignments] = useState([]);
-
   return (
-    <div className="App">
-      <h1>📚 Gradebook Dashboard</h1>
-      <CourseList courses={courses} setCourses={setCourses} />
-      <StudentList students={students} setStudents={setStudents} />
-      <AssignmentList assignments={assignments} setAssignments={setAssignments} />
-    </div>
+    <Layout>
+      <Sider style={{ height: "100vh", backgroundColor: "white" }}>
+        <Image
+          src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+          alt="Gradebook Logo"
+          preview={false} 
+          height={100}
+          width={100}
+        />
+        <SideMenu />
+      </Sider>
+
+      <Layout>
+        <Content>
+          <AppRoutes />
+        </Content>
+        <Footer style={{ textAlign: "center" }}>
+          Gradebook Dashboard ©2025
+        </Footer>
+      </Layout>
+    </Layout>
   );
 }
 
